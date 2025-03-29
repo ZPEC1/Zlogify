@@ -1,0 +1,20 @@
+{
+  "name": "zlogify",
+  "version": "1.0.0",
+  "description": "Integrating vlog trends with boring blogs to make the beauty of text come to life.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "author": "ZK",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "bootstrap": "^5.3.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}
