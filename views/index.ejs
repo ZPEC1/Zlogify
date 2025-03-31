@@ -1,17 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
-  </head>
-  <body>
-    <%- include('partials/header') %>
 
-    <h1 class="mb-4">Welcome to My Blog</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zlogify</title>
 
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <!-- Custom Styles -->
+</head>
+
+<body style="background-color: #fffdf2">
+  <%- include('partials/header') %>
+
+    <!-- Banner -->
+    <section class="mb-4">
+      <img src="/images/HOMEBANNER.png" alt="Zlogify Home Banner" class="img-fluid w-100 shadow" />
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+      <div class="row">
+        <!-- Sidebar (Categories) -->
+        <aside class="col-md-3">
+          <h4 class="mb-3">Categories</h4>
+          <div class="list-group">
+            <button type="button" class="list-group-item list-group-item-action active" data-category="All">
+              All
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="Opinion">
+              Opinion
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="Technology">
+              Technology
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="Literature">
+              Literature
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="Politics">
+              Politics
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="Entertainment">
+              Entertainment
+            </button>
+          </div>
+        </aside>
+
+        <!-- Blog Content -->
+        <main class="col-md-9" id="category-content">
+          <p class="text-muted">Loading blogs...</p>
+        </main>
+      </div>
     </div>
 
     <%- include('partials/footer') %>
-  </body>
+
+      <!-- JavaScript -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const categoryButtons = document.querySelectorAll(
+            ".list-group-item-action"
+          );
+          const contentContainer = document.getElementById("category-content");
+          async function fetchBlogs(category = "all") {
+            try {
+              let url = category === "all" ? "/blogs" : `/blogs?category=${category.toLowerCase()}`;
+              const response = await fetch(url);
+              const data = await response.text();
+              contentContainer.innerHTML = data;
+            } catch (error) {
+              console.error("Error fetching blogs:", error);
+              contentContainer.innerHTML = `<p class="text-danger">Error loading blogs.</p>`;
+            }
+          }
+
+
+          // Load all blogs by default
+          fetchBlogs();
+
+          categoryButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+              categoryButtons.forEach((btn) => btn.classList.remove("active"));
+              button.classList.add("active");
+
+              const selectedCategory = button.getAttribute("data-category");
+              fetchBlogs(selectedCategory);
+            });
+          });
+        });
+      </script>
+</body>
+
 </html>
