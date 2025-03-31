@@ -1,19 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>post</title>
-  </head>
-  <body>
-    <%- include('partials/header') %>
 
-    <article class="mb-4">
-      <h1><%= post.title %></h1>
-      <p><%= post.content %></p>
-      <a href="/" class="btn btn-secondary mt-3">← Back to Home</a>
-    </article>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>post</title>
+</head>
+
+<body style="background-color: #fffdf2">
+  <%- include('partials/header') %>
+    <form id="blogForm" novalidate>
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="floatingInput" required placeholder="name@example.com" />
+        <label for="floatingInput">Email address</label>
+        <div class="invalid-feedback">Please enter a valid email.</div>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingName" placeholder="Name" required minlength="3" />
+        <label for="floatingName">Name</label>
+        <div class="invalid-feedback">
+          Name must be at least 3 characters long.
+        </div>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingTitle" placeholder="Title" required minlength="3" />
+        <label for="floatingTitle">Title</label>
+        <div class="invalid-feedback">
+          Title must be at least 3 characters long.
+        </div>
+      </div>
+
+      <div class="form-floating mb-3">
+        <select class="form-select" id="floatingSelect" required>
+          <option value="" selected>Select category of your blog</option>
+          <option value="Technology">Technology</option>
+          <option value="Literature">Literature</option>
+          <option value="Politics">Politics</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Opinion">Opinion</option>
+        </select>
+        <label for="floatingSelect">Category</label>
+        <div class="invalid-feedback">Please select a category.</div>
+      </div>
+
+      <div class="form-floating mb-3">
+        <textarea class="form-control" id="floatingContent" placeholder="Content" style="height: 100px" required
+          minlength="20"></textarea>
+        <label for="floatingContent">Content</label>
+        <div class="invalid-feedback">
+          Content must be at least 20 characters long.
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("blogForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const form = event.target;
+          if (!form.checkValidity()) {
+            event.stopPropagation();
+            form.classList.add("was-validated");
+            return;
+          }
+
+          // Prepare form data
+          const blogData = {
+            email: document.getElementById("floatingInput").value,
+            name: document.getElementById("floatingName").value,
+            title: document.getElementById("floatingTitle").value,
+            category: document.getElementById("floatingSelect").value,
+            content: document.getElementById("floatingContent").value,
+          };
+
+          try {
+            const response = await fetch("/blogs", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(blogData),
+            });
+
+            if (!response.ok) throw new Error("Failed to submit blog");
+
+            const newBlog = await response.json();
+            window.location.href = `/blogs/${newBlog.id}`;
+          } catch (error) {
+            console.error("Error submitting blog:", error);
+            alert("Failed to submit blog. Please try again.");
+          }
+        });
+    </script>
 
     <%- include('partials/footer') %>
-  </body>
+</body>
+
 </html>

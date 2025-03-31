@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= blog.title %></title>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+</head>
+<body style="background-color: #FFFDF2;">
+  <%- include('partials/header') %>
+
+  <div class="container mt-4">
+    <h1><%= blog.title %></h1>
+    <p><%= blog.content %></p>
+    <a href="/" class="btn btn-secondary">Back to Home</a>
+  </div>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

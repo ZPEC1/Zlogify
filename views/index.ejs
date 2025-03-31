@@ -26,7 +26,7 @@
         <aside class="col-md-3">
           <h4 class="mb-3">Categories</h4>
           <div class="list-group">
-            <button type="button" class="list-group-item list-group-item-action active" data-category="All">
+            <button type="button" class="list-group-item list-group-item-action active" data-category="all">
               All
             </button>
             <button type="button" class="list-group-item list-group-item-action" data-category="Opinion">
@@ -49,7 +49,9 @@
 
         <!-- Blog Content -->
         <main class="col-md-9" id="category-content">
-          <p class="text-muted">Loading blogs...</p>
+          <div class="spinner-grow" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
         </main>
       </div>
     </div>
@@ -65,16 +67,24 @@
           const contentContainer = document.getElementById("category-content");
           async function fetchBlogs(category = "all") {
             try {
-              let url = category === "all" ? "/blogs" : `/blogs?category=${category.toLowerCase()}`;
+              contentContainer.innerHTML = `
+            <div class="text-center mt-3">
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+    `;
+              let url =
+                category === "all"
+                  ? "/blogs"
+                  : `/blogs?category=${category.toLowerCase()}`;
               const response = await fetch(url);
               const data = await response.text();
               contentContainer.innerHTML = data;
             } catch (error) {
               console.error("Error fetching blogs:", error);
-              contentContainer.innerHTML = `<p class="text-danger">Error loading blogs.</p>`;
             }
           }
-
 
           // Load all blogs by default
           fetchBlogs();
