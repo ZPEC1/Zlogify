@@ -4,11 +4,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>post</title>
+  <title>Create Blog Post</title>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
 </head>
 
 <body style="background-color: #fffdf2">
   <%- include('partials/header') %>
+
+  <div class="container my-5">
+    <h2>Create a New Blog Post</h2>
     <form id="blogForm" novalidate>
       <div class="form-floating mb-3">
         <input type="email" class="form-control" id="floatingInput" required placeholder="name@example.com" />
@@ -46,7 +50,7 @@
       </div>
 
       <div class="form-floating mb-3">
-        <textarea class="form-control" id="floatingContent" placeholder="Content" style="height: 100px" required
+        <textarea class="form-control" id="floatingContent" placeholder="Content" style="height: 150px" required
           minlength="20"></textarea>
         <label for="floatingContent">Content</label>
         <div class="invalid-feedback">
@@ -56,48 +60,48 @@
 
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+  </div>
 
-    <script>
-      document
-        .getElementById("blogForm")
-        .addEventListener("submit", async function (event) {
-          event.preventDefault();
+  <script>
+    document.getElementById("blogForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-          const form = event.target;
-          if (!form.checkValidity()) {
-            event.stopPropagation();
-            form.classList.add("was-validated");
-            return;
-          }
+      const form = event.target;
+      if (!form.checkValidity()) {
+        event.stopPropagation();
+        form.classList.add("was-validated");
+        return;
+      }
 
-          // Prepare form data
-          const blogData = {
-            email: document.getElementById("floatingInput").value,
-            name: document.getElementById("floatingName").value,
-            title: document.getElementById("floatingTitle").value,
-            category: document.getElementById("floatingSelect").value,
-            content: document.getElementById("floatingContent").value,
-          };
+      const blogData = {
+        email: document.getElementById("floatingInput").value,
+        name: document.getElementById("floatingName").value,
+        title: document.getElementById("floatingTitle").value,
+        category: document.getElementById("floatingSelect").value,
+        content: document.getElementById("floatingContent").value,
+      };
 
-          try {
-            const response = await fetch("/blogs", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(blogData),
-            });
-
-            if (!response.ok) throw new Error("Failed to submit blog");
-
-            const newBlog = await response.json();
-            window.location.href = `/blogs/${newBlog.id}`;
-          } catch (error) {
-            console.error("Error submitting blog:", error);
-            alert("Failed to submit blog. Please try again.");
-          }
+      try {
+        const response = await fetch("/blogs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(blogData),
         });
-    </script>
 
-    <%- include('partials/footer') %>
+        if (!response.redirected) {
+          const newBlog = await response.json();
+          window.location.href = `/blogs/${newBlog._id}`; // Use _id from MongoDB
+        } else {
+          window.location.href = response.url; // Fallback if server redirects
+        }
+      } catch (error) {
+        console.error("Error submitting blog:", error);
+        alert("Failed to submit blog. Please try again.");
+      }
+    });
+  </script>
+
+  <%- include('partials/footer') %>
 </body>
 
 </html>

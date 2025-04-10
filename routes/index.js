@@ -1,56 +1,70 @@
 import express from "express";
+import Blog from "../models/blogs.js"; // make sure the path matches your structure
 
 const router = express.Router();
 
-// Fix: Each blog has a unique ID
-const blogs = [
-  { id: "1", title: "Tech Trends 2025", content: "AI and quantum computing are evolving...", category: "Technology" },
-  { id: "2", title: "Literature in Modern Times", content: "Authors today focus on deep storytelling...", category: "Literature" },
-  { id: "3", title: "The Future of Politics", content: "Global policies are shifting towards...", category: "Politics" }
-];
-
+// Home Page
 router.get("/", (req, res) => {
   res.render("index", { title: "Home" });
 });
 
-router.get("/blogs", (req, res) => {
+// Blog Listing (optional category filtering)
+router.get("/blogs", async (req, res) => {
   const category = req.query.category || "All";
-  const filteredBlogs = category === "All" ? blogs : blogs.filter(blog => blog.category.toLowerCase() === category.toLowerCase());
 
-  res.render("blogs", { category, blogs: filteredBlogs });
-});
+  try {
+    const blogs = category === "All"
+      ? await Blog.find().sort({ createdAt: -1 })
+      : await Blog.find({ category: new RegExp(category, "i") }).sort({ createdAt: -1 });
 
-router.get("/blogs/:id", (req, res) => {
-  const blog = blogs.find(blog => blog.id === req.params.id); // Fix: Correct find method
-  if (!blog) {
-    return res.status(404).send("Blog not found");
+    res.render("blogs", { category, blogs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading blogs");
   }
-  
-  res.render("blogDetails", { blog });
 });
 
+// Blog Details
+router.get("/blogs/:id", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).send("Blog not found");
+
+    res.render("blogDetails", { blog });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error fetching blog");
+  }
+});
+
+// Render Blog Post Page
 router.get("/post", (req, res) => {
   res.render("post");
-})
+});
 
-router.post("/blogs", (req, res) => {
+// Handle New Blog Post
+router.post("/blogs", async (req, res) => {
   const { email, name, title, category, content } = req.body;
 
   if (!email || !name || !title || !category || !content) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
-  const newBlog = {
-    id: String(blogs.length + 1), // Simple ID generation
-    title,
-    content,
-    category,
-    author: name,
-    email,
-  };
+  try {
+    const newBlog = new Blog({
+      title,
+      content,
+      category,
+      author: name,
+      email,
+    });
 
-  blogs.push(newBlog);
-  res.json(newBlog);
+    await newBlog.save();
+    res.redirect("/");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error saving blog post");
+  }
 });
 
 export default router;

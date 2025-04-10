@@ -12,17 +12,18 @@
     <h1 class="mb-3">Blogs - <%= category ? category.toUpperCase() : "ALL" %></h1>
 
     <% if (blogs.length > 0) { %>
-      <div class="row">
+      <div class="row" >
         <% blogs.forEach(blog => { %>
           <div class="col-md-4">
             <div class="card shadow-sm mb-4">
-              <div class="card-body">
+              <div class="card-body" style="background-color: #eee2dc;">
                 <h5 class="card-title"><%= blog.title %></h5>
                 <p class="card-text">
                   <%= blog.content.length > 100 ? blog.content.substring(0, 100) + "..." : blog.content %>
                 </p>
-                <span class="badge bg-secondary"><%= blog.category %></span>
-                <a href="/blogs/<%= blog.id %>" class="btn btn-primary mt-2">Read More</a>
+                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 1rem; padding: 0.5rem 0.5rem;">#<%= blog.category %></span>
+                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 1rem; padding: 0.5rem 0.5rem;">Author: <%= blog.author %></span>
+                <a href="/blogs/<%= blog.id %>" class="btn btn-primary mt-2" style="background-color: #123c69;">Read More</a>
               </div>
             </div>
           </div>

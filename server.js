@@ -1,6 +1,9 @@
 import express from "express";
 import routes from "./routes/index.js";
 import path from "path";
+import connectDB from "./db.js";
+
+connectDB();
 
 const app = express();
 const port = 3000;
