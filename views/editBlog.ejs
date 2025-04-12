@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Edit Blog</title>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+</head>
+<body style="background-color: #fffdf2">
+  <%- include('partials/header') %>
+
+  <div class="container my-5">
+    <h2>Edit Blog Post</h2>
+    <form action="/blogs/<%= blog._id %>/edit" method="POST" novalidate>
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="floatingInput" name="email" value="<%= blog.email %>" required />
+        <label for="floatingInput">Email address</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingName" name="name" value="<%= blog.author %>" required />
+        <label for="floatingName">Name</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingTitle" name="title" value="<%= blog.title %>" required />
+        <label for="floatingTitle">Title</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <select class="form-select" id="floatingSelect" name="category" required>
+          <option value="Technology" <%= blog.category === 'Technology' ? 'selected' : '' %>>Technology</option>
+          <option value="Literature" <%= blog.category === 'Literature' ? 'selected' : '' %>>Literature</option>
+          <option value="Politics" <%= blog.category === 'Politics' ? 'selected' : '' %>>Politics</option>
+          <option value="Entertainment" <%= blog.category === 'Entertainment' ? 'selected' : '' %>>Entertainment</option>
+          <option value="Opinion" <%= blog.category === 'Opinion' ? 'selected' : '' %>>Opinion</option>
+        </select>
+        <label for="floatingSelect">Category</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <textarea class="form-control" id="floatingContent" name="content" style="height: 150px" required><%= blog.content %></textarea>
+        <label for="floatingContent">Content</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+  </div>
+
+  <%- include('partials/footer') %>
+</body>
+</html>
