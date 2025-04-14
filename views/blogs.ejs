@@ -17,12 +17,13 @@
           <div class="col-md-4">
             <div class="card shadow-sm mb-4">
               <div class="card-body" style="background-color: #eee2dc;">
-                <h5 class="card-title"><%= blog.title %></h5>
+                <h5 class="card-title" style="text-transform: uppercase;color:#08116e;"><strong><%= blog.title %></strong></h5>
                 <p class="card-text">
-                  <%= blog.content.length > 100 ? blog.content.substring(0, 100) + "..." : blog.content %>
+                  <p style="font-size: 1rem;">Posted on: <%= new Date(blog.createdAt).toLocaleDateString()%></p>
+                  <p style="font-size: 0.75rem;"><%= blog.content.length > 100 ? blog.content.substring(0, 100) + "..." : blog.content %></p>
                 </p>
-                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 1rem; padding: 0.5rem 0.5rem;">#<%= blog.category %></span>
-                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 1rem; padding: 0.5rem 0.5rem;">Author: <%= blog.author %></span>
+                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 0.75rem; padding: 0.5rem 0.5rem;">#<%= blog.category %></span>
+                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 0.75rem; padding: 0.5rem 0.5rem;">Author: <%= blog.author %></span>
                 <a href="/blogs/<%= blog.id %>" class="btn btn-primary mt-2" style="background-color: #123c69;">Read More</a>
               </div>
             </div>

@@ -33,7 +33,7 @@ router.use((req, res, next) => {
 
 // Home Page
 router.get("/", (req, res) => {
-  res.render("index", { title: "Home" });
+  res.render("index", { title: "Home", activePage: "home" });
 });
 
 // Blog Listing
@@ -51,6 +51,21 @@ router.get("/blogs", async (req, res) => {
     res.status(500).send("Error loading blogs");
   }
 });
+//My Blogs/Posts page
+router.get("/myPosts", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const userBlogs = await Blog.find({ email: req.user.email }).sort({ createdAt: -1 });
+
+    res.render("myPosts", { userBlogs,  activePage: "myPosts"});
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading posts");
+  }
+});
 
 // Blog Details
 router.get("/blogs/:id", async (req, res) => {
@@ -58,7 +73,7 @@ router.get("/blogs/:id", async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).send("Blog not found");
 
-    res.render("blogDetails", { blog });
+    res.render("blogDetails", { blog, activePage: "home" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error fetching blog");
@@ -71,7 +86,7 @@ router.get("/post", (req, res) => {
   if(!req.isAuthenticated()){
     return res.redirect("/login");
   }
-  res.render("post", { user: req.user });
+  res.render("post", { user: req.user, activePage: "create" });
 });
 router.post("/blogs", async (req, res) => {
   if(!req.isAuthenticated()){
@@ -110,7 +125,7 @@ router.get("/blogs/:id/edit", async (req, res) => {
       return res.status(403).send("Unauthorized access");
     }
 
-    res.render("editBlog", { blog });
+    res.render("editBlog", { blog, activePage: "create" });
   } catch (err) {
     res.status(500).send("Error loading blog for editing");
   }
@@ -160,7 +175,7 @@ router.post("/blogs/:id/delete", async (req, res) => {
 
 //Authentication Pages
 router.get("/login", (req, res) => {
-  res.render("login.ejs");
+  res.render("login.ejs", { activePage: "login" });
 });
 
 router.get("/register", (req, res) => {
