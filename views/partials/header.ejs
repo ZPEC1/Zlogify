@@ -53,12 +53,19 @@
           <button class="btn btn-outline-dark" type="submit">Search</button>
         </form>
         <div class="d-flex">
-          <form action="/login" method="GET" class="me-2">
-            <button class="btn btn-outline-dark" type="submit">Log In</button>
-          </form>
-          <form action="/signup" method="GET">
-            <button class="btn btn-outline-dark" type="submit">Create new account</button>
-          </form>
+          <% if (user) { %>
+            <span class="me-3 mt-1">Hello, <%= user.name %>!</span>
+            <form action="/logout" method="GET">
+              <button class="btn btn-outline-dark" type="submit">Log Out</button>
+            </form>
+          <% } else { %>
+            <form action="/login" method="GET" class="me-2">
+              <button class="btn btn-outline-dark" type="submit">Log In</button>
+            </form>
+            <form action="/register" method="GET">
+              <button class="btn btn-outline-dark" type="submit">Create new account</button>
+            </form>
+          <% } %>
         </div>
       </div>
     </div>
