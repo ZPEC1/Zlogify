@@ -1,38 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blogs - <%= category ? category.toUpperCase() : "ALL" %></title>
+  <title>Blogs - <%= category ? category.toUpperCase() : "ALL" %>
+  </title>
   <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
 </head>
 
 <body class="bg-light">
   <div class="container my-4">
-    <h1 class="mb-3">Blogs - <%= category ? category.toUpperCase() : "ALL" %></h1>
+    <h1 class="mb-3">Blogs - <%= category ? category.toUpperCase() : "ALL" %>
+    </h1>
 
-    <% if (blogs.length > 0) { %>
-      <div class="row" >
-        <% blogs.forEach(blog => { %>
+    <% if (blogs.length> 0) { %>
+      <div class="row">
+        <% blogs.forEach(blog=> { %>
           <div class="col-md-4">
             <div class="card shadow-sm mb-4">
               <div class="card-body" style="background-color: #eee2dc;">
-                <h5 class="card-title" style="text-transform: uppercase;color:#08116e;"><strong><%= blog.title %></strong></h5>
+                <h5 class="card-title" style="text-transform: uppercase;color:#08116e;"><strong>
+                    <%= blog.title %>
+                  </strong></h5>
                 <p class="card-text">
-                  <p style="font-size: 1rem;">Posted on: <%= new Date(blog.createdAt).toLocaleDateString()%></p>
-                  <p style="font-size: 0.75rem;"><%= blog.content.length > 100 ? blog.content.substring(0, 100) + "..." : blog.content %></p>
+                <p style="font-size: 1rem;">Posted on: <%= new Date(blog.createdAt).toLocaleDateString()%>
                 </p>
-                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 0.75rem; padding: 0.5rem 0.5rem;">#<%= blog.category %></span>
-                <span class="badge mt-2" style="background-color: #ac3b61;font-size: 0.75rem; padding: 0.5rem 0.5rem;">Author: <%= blog.author %></span>
-                <a href="/blogs/<%= blog.id %>" class="btn btn-primary mt-2" style="background-color: #123c69;">Read More</a>
+                <% function stripHtml(html) { return html.replace(/<[^>]*>?/gm, '');
+                  }
+
+                  const plainText = stripHtml(blog.content);
+                  const preview = plainText.length > 100 ? plainText.substring(0, 100) + "....." : plainText;
+                  %>
+
+                  <p style="font-size: 0.75rem;">
+                    <%= preview %>
+                  </p>
+
+                  </p>
+                  <span class="badge mt-2"
+                    style="background-color: #ac3b61;font-size: 0.75rem; padding: 0.5rem 0.5rem;">#<%= blog.category %>
+                      </span>
+                  <span class="badge mt-2"
+                    style="background-color: #ac3b61;font-size: 0.75rem; padding: 0.5rem 0.5rem;">Author: <%=
+                      blog.author %></span>
+                  <a href="/blogs/<%= blog.id %>" class="btn btn-primary mt-2" style="background-color: #123c69;">Read
+                    More</a>
               </div>
             </div>
           </div>
-        <% }) %>
+          <% }) %>
       </div>
-    <% } else { %>
-      <p class="text-muted">No blogs found for this category.</p>
-    <% } %>
+      <% } else { %>
+        <p class="text-muted">No blogs found for this category.</p>
+        <% } %>
   </div>
 </body>
+
 </html>

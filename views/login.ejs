@@ -1,42 +1,47 @@
-<%- include('partials/header') %>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container mt-5">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zlogify</title>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+</head>
+<%- include('partials/header') %>
+<style>
+  body {
+    background-color: #fffdf2;
+  }
+</style>
+<body>
+<div class="container mt-5 " >
   <h1>Login</h1>
 
   <div class="row">
     <div class="col-sm-8">
       <div class="card">
         <div class="card-body">
-
-          <!-- Makes POST request to /login route -->
           <form action="/login" method="POST">
-            <div class="form-group">
+            <div class="form-group mt-2">
               <label for="email">Email</label>
               <input type="email" class="form-control" name="username">
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
               <label for="password">Password</label>
               <input type="password" class="form-control" name="password">
             </div>
-            <button type="submit" class="btn btn-dark">Login</button>
+            <button type="submit" class="btn btn-dark mt-3">Login</button>
           </form>
 
         </div>
       </div>
     </div>
 
-    <!-- <div class="col-sm-4">
-      <div class="card">
-        <div class="card-body">
-          <a class="btn btn-block" href="/auth/google" role="button">
-            <i class="fab fa-google"></i>
-            Sign In with Google
-          </a>
-        </div>
-      </div>
-    </div> -->
-
   </div>
 </div>
 
 <%- include('partials/footer') %>
+
+</body>
+
+</html>

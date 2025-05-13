@@ -4,6 +4,8 @@ import Users from "../models/Users.js";
 import session from "express-session";
 import passport from "passport";
 import { Strategy } from "passport-local";
+//sanitise 
+import sanitizeHtml from 'sanitize-html';
 //Hashing using Bcrypt == Blowfish Cipher == Industry Standard
 import bcrypt from "bcrypt";
 const router = express.Router();
@@ -29,6 +31,8 @@ router.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
+
+
 
 
 // Home Page
@@ -170,7 +174,65 @@ router.post("/blogs/:id/delete", async (req, res) => {
     res.status(500).send("Failed to delete blog.");
   }
 });
+//Advanced Options for Post
+router.post("/blogs/advanced", async (req, res) => {
+  try {
+    const { title, content, category } = req.body;
+    const blog = new Blog({
+      email: req.user.email,
+      name: req.user.name,
+      title,
+      content,
+      category,
+    });
+    await blog.save();
+    res.redirect(`/blogs/${blog._id}/advanced`);
+  } catch (err) {
+    res.status(500).send("Failed to save blog for advanced options.");
+  }
+});
+router.get("/blogs/:id/advanced", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).send("Blog not found");
+    if (!req.isAuthenticated() || req.user.email !== blog.email) {
+      return res.status(403).send("Unauthorized");
+    }
 
+    res.render("advancedEditor", { user: req.user, blog, activePage: "create" });
+  } catch (err) {
+    res.status(500).send("Failed to load advanced editor.");
+  }
+});
+router.post("/blogs/:id/advanced/save", async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).send("Blog not found");
+
+    if (!req.isAuthenticated() || req.user.email !== blog.email) {
+      return res.status(403).send("Unauthorized");
+    }
+
+    const cleanHTML = sanitizeHtml(req.body.styledContent, {
+      allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'iframe']),
+      allowedAttributes: {
+        '*': ['style', 'class'],
+        iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen'],
+        img: ['src', 'alt'],
+        a: ['href', 'target', 'rel'],
+      },
+      allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com'],
+    });
+
+    blog.content = cleanHTML;
+    await blog.save();
+
+    res.redirect(`/blogs/${blog._id}`);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to save styled blog content.");
+  }
+});
 
 
 //Authentication Pages
@@ -179,7 +241,7 @@ router.get("/login", (req, res) => {
 });
 
 router.get("/register", (req, res) => {
-  res.render("register.ejs");
+  res.render("register.ejs", { activePage: "register" });
 });
 // Register request
 router.post("/register", async (req, res) => {
@@ -287,3 +349,7 @@ router.get("/logout", (req, res) => {
 });
 
 export default router;
+function sanitise() {
+  return require("sanitize-html");
+}
+

@@ -11,99 +11,123 @@
 <body style="background-color: #fffdf2">
   <%- include('partials/header') %>
 
-    <div class="container my-5">
-      <h2>Create a New Blog Post</h2>
-      <form id="blogForm" novalidate>
-        <div class="form-floating mb-3">
-          <input type="email" class="form-control" id="floatingInput" required placeholder="name@example.com"
-            value="<%= user.email %>" readonly />
-          <label for="floatingInput">Email address</label>
-          <div class="invalid-feedback">Please enter a valid email.</div>
-        </div>
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="floatingName" placeholder="Name" required minlength="3"
-            value="<%= user.name %>" readonly />
-          <label for="floatingName">Name</label>
-          <div class="invalid-feedback">
-            Name must be at least 3 characters long.
-          </div>
-        </div>
+  <div class="container my-5">
+    <h2>Create a New Blog Post</h2>
+    <form id="blogForm" novalidate>
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="floatingInput" required placeholder="name@example.com"
+          value="<%= user.email %>" readonly />
+        <label for="floatingInput">Email address</label>
+        <div class="invalid-feedback">Please enter a valid email.</div>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingName" placeholder="Name" required minlength="3"
+          value="<%= user.name %>" readonly />
+        <label for="floatingName">Name</label>
+        <div class="invalid-feedback">Name must be at least 3 characters long.</div>
+      </div>
 
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingTitle" placeholder="Title" required minlength="3" />
+        <label for="floatingTitle">Title</label>
+        <div class="invalid-feedback">Title must be at least 3 characters long.</div>
+      </div>
 
-        <div class="form-floating mb-3">
-          <input type="text" class="form-control" id="floatingTitle" placeholder="Title" required minlength="3" />
-          <label for="floatingTitle">Title</label>
-          <div class="invalid-feedback">
-            Title must be at least 3 characters long.
-          </div>
-        </div>
+      <div class="form-floating mb-3">
+        <select class="form-select" id="floatingSelect" required>
+          <option value="" selected>Select category of your blog</option>
+          <option value="Technology">Technology</option>
+          <option value="Literature">Literature</option>
+          <option value="Politics">Politics</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Opinion">Opinion</option>
+        </select>
+        <label for="floatingSelect">Category</label>
+        <div class="invalid-feedback">Please select a category.</div>
+      </div>
 
-        <div class="form-floating mb-3">
-          <select class="form-select" id="floatingSelect" required>
-            <option value="" selected>Select category of your blog</option>
-            <option value="Technology">Technology</option>
-            <option value="Literature">Literature</option>
-            <option value="Politics">Politics</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Opinion">Opinion</option>
-          </select>
-          <label for="floatingSelect">Category</label>
-          <div class="invalid-feedback">Please select a category.</div>
-        </div>
+      <div class="form-floating mb-3">
+        <textarea class="form-control" id="floatingContent" placeholder="Content" style="height: 150px" required minlength="20"></textarea>
+        <label for="floatingContent">Content</label>
+        <div class="invalid-feedback">Content must be at least 20 characters long.</div>
+      </div>
 
-        <div class="form-floating mb-3">
-          <textarea class="form-control" id="floatingContent" placeholder="Content" style="height: 150px" required
-            minlength="20"></textarea>
-          <label for="floatingContent">Content</label>
-          <div class="invalid-feedback">
-            Content must be at least 20 characters long.
-          </div>
-        </div>
-
+      <div class="d-flex justify-content-between">
         <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
-    </div>
+        <button type="button" class="btn btn-outline-secondary" id="advancedBtn">Advanced Options</button>
+      </div>
+    </form>
+  </div>
 
-    <script>
-      document.getElementById("blogForm").addEventListener("submit", async function (event) {
-        event.preventDefault();
+  <script>
+    document.getElementById("blogForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-        const form = event.target;
-        if (!form.checkValidity()) {
-          event.stopPropagation();
-          form.classList.add("was-validated");
-          return;
+      const form = event.target;
+      if (!form.checkValidity()) {
+        event.stopPropagation();
+        form.classList.add("was-validated");
+        return;
+      }
+
+      const blogData = {
+        email: document.getElementById("floatingInput").value,
+        name: document.getElementById("floatingName").value,
+        title: document.getElementById("floatingTitle").value,
+        category: document.getElementById("floatingSelect").value,
+        content: document.getElementById("floatingContent").value,
+      };
+
+      try {
+        const response = await fetch("/blogs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(blogData),
+        });
+
+        if (!response.redirected) {
+          const newBlog = await response.json();
+          window.location.href = `/blogs/${newBlog._id}`;
+        } else {
+          window.location.href = response.url;
         }
+      } catch (error) {
+        console.error("Error submitting blog:", error);
+        alert("Failed to submit blog. Please try again.");
+      }
+    });
 
-        const blogData = {
-          email: document.getElementById("floatingInput").value,
-          name: document.getElementById("floatingName").value,
-          title: document.getElementById("floatingTitle").value,
-          category: document.getElementById("floatingSelect").value,
-          content: document.getElementById("floatingContent").value,
-        };
+  document.getElementById("advancedBtn").addEventListener("click", async function () {
+    const form = document.getElementById("blogForm");
+    if (!form.checkValidity()) {
+      form.classList.add("was-validated");
+      return;
+    }
 
-        try {
-          const response = await fetch("/blogs", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(blogData),
-          });
+    const blogData = {
+      title: document.getElementById("floatingTitle").value,
+      content: document.getElementById("floatingContent").value,
+      category: document.getElementById("floatingSelect").value,
+    };
 
-          if (!response.redirected) {
-            const newBlog = await response.json();
-            window.location.href = `/blogs/${newBlog._id}`; // Use _id from MongoDB
-          } else {
-            window.location.href = response.url; // Fallback if server redirects
-          }
-        } catch (error) {
-          console.error("Error submitting blog:", error);
-          alert("Failed to submit blog. Please try again.");
-        }
+    try {
+      const response = await fetch("/blogs/advanced", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(blogData),
       });
-    </script>
 
-    <%- include('partials/footer') %>
+      if (response.redirected) {
+        window.location.href = response.url;
+      }
+    } catch (err) {
+      console.error("Failed to redirect to advanced options:", err);
+      alert("An error occurred while going to advanced options.");
+    }
+  });
+  </script>
+
+  <%- include('partials/footer') %>
 </body>
 
 </html>
