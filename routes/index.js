@@ -93,14 +93,16 @@ router.get("/post", (req, res) => {
   res.render("post", { user: req.user, activePage: "create" });
 });
 router.post("/blogs", async (req, res) => {
-  if(!req.isAuthenticated()){
-    return res.redirect("/login");
-  }
+  if (!req.isAuthenticated()) return res.redirect("/login");
+
   const { email, name, title, category, content } = req.body;
 
   if (!email || !name || !title || !category || !content) {
     return res.status(400).json({ error: "All fields are required" });
   }
+
+  // Simple check for iframe/video embed in content (case-insensitive)
+  const hasVideo = /<iframe.*src=.*(youtube\.com|vimeo\.com).*>.*<\/iframe>/i.test(content);
 
   try {
     const newBlog = new Blog({
@@ -109,6 +111,7 @@ router.post("/blogs", async (req, res) => {
       category,
       author: name,
       email,
+      hasVideo, // set the flag
     });
 
     await newBlog.save();
@@ -118,7 +121,6 @@ router.post("/blogs", async (req, res) => {
     res.status(500).send("Error saving blog post");
   }
 });
-
 /// Edit blog page
 router.get("/blogs/:id/edit", async (req, res) => {
   try {
@@ -174,16 +176,25 @@ router.post("/blogs/:id/delete", async (req, res) => {
     res.status(500).send("Failed to delete blog.");
   }
 });
-//Advanced Options for Post
+// Utility function to detect video iframe presence in HTML content
+function hasVideoEmbed(htmlContent) {
+  return /<iframe.*src=.*(youtube\.com|vimeo\.com).*>.*<\/iframe>/i.test(htmlContent);
+}
+
+// Advanced Options for Post - create with advanced
 router.post("/blogs/advanced", async (req, res) => {
   try {
     const { title, content, category } = req.body;
+
+    const videoPresent = hasVideoEmbed(content);
+
     const blog = new Blog({
       email: req.user.email,
-      name: req.user.name,
+      author: req.user.name,  // changed from 'name' to 'author' for consistency with your other code
       title,
       content,
       category,
+      hasVideo: videoPresent,  // set the flag here
     });
     await blog.save();
     res.redirect(`/blogs/${blog._id}/advanced`);
@@ -191,6 +202,7 @@ router.post("/blogs/advanced", async (req, res) => {
     res.status(500).send("Failed to save blog for advanced options.");
   }
 });
+
 router.get("/blogs/:id/advanced", async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
@@ -204,6 +216,7 @@ router.get("/blogs/:id/advanced", async (req, res) => {
     res.status(500).send("Failed to load advanced editor.");
   }
 });
+
 router.post("/blogs/:id/advanced/save", async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
@@ -225,6 +238,7 @@ router.post("/blogs/:id/advanced/save", async (req, res) => {
     });
 
     blog.content = cleanHTML;
+    blog.hasVideo = hasVideoEmbed(cleanHTML);  // update flag on save
     await blog.save();
 
     res.redirect(`/blogs/${blog._id}`);
@@ -233,6 +247,19 @@ router.post("/blogs/:id/advanced/save", async (req, res) => {
     res.status(500).send("Failed to save styled blog content.");
   }
 });
+
+
+//vlogs
+router.get("/vlogs", async (req, res) => {
+  try {
+    const vlogs = await Blog.find({ hasVideo: true }).sort({ createdAt: -1 });
+    res.render("vlogs", { vlogs, activePage: "vlogs" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to load vlogs.");
+  }
+});
+
 
 
 //Authentication Pages

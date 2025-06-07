@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Vlogs</title>
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+  <style>
+    .video-thumbnail {
+      position: relative;
+      cursor: pointer;
+    }
+    .video-thumbnail img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      height: 60px;
+      transform: translate(-50%, -50%);
+      background: url('/images/play-button.png') no-repeat center center;
+      background-size: contain;
+    }
+  </style>
+</head>
+<body style="background-color: #fffdf2">
+  <%- include('partials/header') %>
+
+  <div class="container my-4">
+    <h1>Vlogs (Blogs with Videos)</h1>
+
+    <% if (vlogs.length > 0) { %>
+      <div class="row">
+        <% vlogs.forEach(vlog => {
+          const match = vlog.content.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+          const videoId = match ? match[1] : null;
+        %>
+          <% if (videoId) { %>
+            <div class="col-md-6 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-body" style="background-color: #eee2dc;">
+                  <h5 class="card-title" style="text-transform: uppercase; color:#08116e;"><strong><%= vlog.title %></strong></h5>
+                  <p>Posted on: <%= new Date(vlog.createdAt).toLocaleDateString() %></p>
+
+                  <!-- Lazy-loaded YouTube thumbnail -->
+                  <div class="video-thumbnail" data-video-id="<%= videoId %>">
+                    <img src="https://img.youtube.com/vi/<%= videoId %>/hqdefault.jpg" alt="YouTube Thumbnail" class="thumbnail-img">
+                    <div class="play-button"></div>
+                  </div>
+
+                  <a href="/blogs/<%= vlog._id %>" class="btn btn-primary mt-3" style="background-color: #123c69;">Read Blog</a>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p>No vlogs found yet.</p>
+    <% } %>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+      thumbnail.addEventListener('click', function () {
+        const videoId = this.getAttribute('data-video-id');
+        const iframe = document.createElement('iframe');
+        iframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1`);
+        iframe.setAttribute('frameborder', '0');
+        iframe.setAttribute('allowfullscreen', '');
+        iframe.setAttribute('allow', 'autoplay; encrypted-media');
+        iframe.style.width = '100%';
+        iframe.style.height = '315px';
+        this.replaceWith(iframe);
+      });
+    });
+  </script>
+</body>
+</html>

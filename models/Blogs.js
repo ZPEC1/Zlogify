@@ -24,6 +24,7 @@ const blogSchema = new mongoose.Schema({
     default: 0,
   },
   comments: [commentSchema],
+  hasVideo: { type: Boolean, default: false }, 
 });
 
 const Blog = mongoose.model("Blog", blogSchema);
