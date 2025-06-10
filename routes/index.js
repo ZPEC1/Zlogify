@@ -11,9 +11,6 @@ import bcrypt from "bcrypt";
 const router = express.Router();
 //Salting for more security 
 const saltRounds = 14;
-//supabase
-import uploadRoute from './upload.js'; 
-router.use('/upload', uploadRoute);
 
 //sessions
 router.use(session({
@@ -36,6 +33,11 @@ router.use((req, res, next) => {
 });
 
 
+//supabase
+import uploadRoute from './upload.js'; 
+router.use('/upload', uploadRoute);
+import generateBlogRoute from'./generateBlogs.js';
+router.use('/generate-blog', generateBlogRoute);
 
 
 // Home Page
@@ -265,7 +267,10 @@ router.get("/vlogs", async (req, res) => {
 
 //vlogs upload
 router.get("/upload-video", (req, res) => {
-  res.render("uploadVideo", { user: req.user });
+  if(!req.isAuthenticated()){
+    return res.redirect("/login");
+  }
+  res.render("uploadVideo", { user: req.user, activePage: "Upload Video" });
 });
 
 

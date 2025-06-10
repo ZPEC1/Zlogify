@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preview & Edit Blog</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  
+  <!-- Quill Editor CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  
+  <style>
+    #editor-container {
+      height: 300px;
+      background-color: white;
+    }
+  </style>
+</head>
+
+<body style="background-color: #fffdf2;">
+  <%- include('partials/header') %>
+
+  <div class="container my-5">
+    <h2>Preview & Edit Your Blog Post</h2>
+
+    <form id="finalizeForm" method="POST" action="/generate-blog/finalize">
+      
+      <div class="mb-3">
+        <label for="title" class="form-label">Blog Title</label>
+        <input type="text" id="title" name="title" class="form-control" value="<%= blog.title %>" required />
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="floatingInput" required placeholder="name@example.com"
+          value="<%= user.email %>" readonly />
+        <label for="floatingInput">Email address</label>
+        <div class="invalid-feedback">Please enter a valid email.</div>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingName" placeholder="Name" required minlength="3"
+          value="<%= user.name %>" readonly />
+        <label for="floatingName">Name</label>
+        <div class="invalid-feedback">Name must be at least 3 characters long.</div>
+      </div>
+
+      <div class="form-floating mb-3">
+        <select class="form-select" id="floatingSelect" name="category" required>
+          <option value="" selected>Select category of your blog</option>
+          <option value="Technology">Technology</option>
+          <option value="Literature">Literature</option>
+          <option value="Politics">Politics</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Opinion">Opinion</option>
+        </select>
+        <label for="floatingSelect">Category</label>
+        <div class="invalid-feedback">Please select a category.</div>
+      </div>
+
+      <input type="hidden" name="content" id="contentInput" />
+
+      <div class="mb-3">
+        <label class="form-label">Content</label>
+        <div id="editor-container"></div>
+      </div>
+
+      <button type="submit" class="btn btn-success">Publish Blog</button>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+    const quill = new Quill('#editor-container', {
+      theme: 'snow',
+      placeholder: 'Edit your blog content...',
+      modules: {
+        toolbar: [
+          [{ font: [] }, { size: [] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ color: [] }, { background: [] }],
+          [{ align: [] }],
+          ['blockquote', 'code-block'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link', 'image'],
+          ['clean']
+        ]
+      }
+    });
+
+    // Remove video embeds before injecting into Quill
+    const rawHTML = `<%- blog.content.replace(/`/g, '&#96;') %>`;
+    const cleanedHTML = rawHTML.replace(/<iframe.*?<\/iframe>/gi, '');
+    quill.root.innerHTML = cleanedHTML;
+
+    // On submit, extract Quill content
+    document.getElementById('finalizeForm').addEventListener('submit', function (e) {
+      const styledHTML = quill.root.innerHTML;
+      if (!quill.getText().trim()) {
+        e.preventDefault();
+        alert('Please enter some blog content.');
+        return;
+      }
+      document.getElementById('contentInput').value = styledHTML;
+    });
+  </script>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

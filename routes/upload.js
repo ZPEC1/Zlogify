@@ -11,7 +11,7 @@ router.post('/', upload.single('video'), async (req, res) => {
     const { originalname, buffer, mimetype } = req.file;
 
     const { data, error } = await supabase.storage
-      .from('videos') // Bucket name must be created manually
+      .from('videos')
       .upload(`public/${Date.now()}-${originalname}`, buffer, {
         contentType: mimetype,
       });
