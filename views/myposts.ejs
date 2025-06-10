@@ -21,7 +21,17 @@
         <% userBlogs.forEach((blog) => { %>
           <a href="/blogs/<%= blog._id %>" class="list-group-item list-group-item-action">
             <h5 class="mb-1"><%= blog.title %></h5>
-            <p class="mb-1"><%= blog.content.substring(0, 100) %>...</p>
+            <% function stripHtml(html) { return html.replace(/<[^>]*>?/gm, '');
+                  }
+
+                  const plainText = stripHtml(blog.content);
+                  const preview = plainText.length > 100 ? plainText.substring(0, 100) + "....." : plainText;
+                  %>
+
+                  <p style="font-size: 0.75rem;">
+                    <%= preview %>
+                  </p>
+
             <small>Category: <%= blog.category %> | Posted on: <%= new Date(blog.createdAt).toLocaleDateString() %></small>
           </a>
         <% }) %>
