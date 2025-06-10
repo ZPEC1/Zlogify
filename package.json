@@ -12,6 +12,7 @@
   "author": "ZK",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.50.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
     "bootstrap": "^5.3.3",
@@ -19,8 +20,10 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "mongoose": "^8.13.2",
+    "multer": "^2.0.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "sanitize-html": "^2.16.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

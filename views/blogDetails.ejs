@@ -56,6 +56,14 @@
       padding: 2rem;
     }
 
+    .blog-content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 1rem 0;
+      border-radius: 8px;
+    }
+
     h1 {
       font-weight: 700;
       font-size: 2.4rem;
@@ -86,12 +94,13 @@
 
   <div class="container">
     <div class="blog-card">
-
       <h1><%= blog.title %></h1>
 
       <% 
         const match = blog.content.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
         const videoId = match ? match[1] : null;
+
+        // Remove the first video iframe only
         const cleanedContent = blog.content.replace(/<iframe.*?youtube\.com\/embed\/.*?<\/iframe>/, '');
       %>
 
@@ -105,8 +114,8 @@
       <% } %>
 
       <div class="blog-content">
-        <p><%- cleanedContent %></p>
-
+        <%- cleanedContent %> <!-- Images will show normally, iframe video is removed -->
+        
         <div class="btn-group mt-4 d-flex flex-wrap">
           <a href="/blogs/<%= blog._id %>/edit" class="btn btn-warning">Edit</a>
           <form action="/blogs/<%= blog._id %>/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete this blog?');">

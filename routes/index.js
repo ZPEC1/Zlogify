@@ -11,6 +11,9 @@ import bcrypt from "bcrypt";
 const router = express.Router();
 //Salting for more security 
 const saltRounds = 14;
+//supabase
+import uploadRoute from './upload.js'; 
+router.use('/upload', uploadRoute);
 
 //sessions
 router.use(session({
@@ -260,6 +263,10 @@ router.get("/vlogs", async (req, res) => {
   }
 });
 
+//vlogs upload
+router.get("/upload-video", (req, res) => {
+  res.render("uploadVideo", { user: req.user });
+});
 
 
 //Authentication Pages
